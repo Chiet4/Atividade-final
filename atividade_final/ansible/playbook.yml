@@ -1,26 +1,36 @@
----
-- hosts: web
+- name: Deploy da aplicação todolist
+  hosts: app
+  become: true  # Necessário para executar comandos com privilégio de superusuário
   tasks:
-  - name: Instalar nginx 
-    become: true
-    apt: 
-      name: nginx 
-      state: latest
-      update_cache: true  
-  - name: Iniciar o nginx
-    service:
-      name: nginx
-      state: started
-- hosts: bancodedados
-  tasks:
-  - name: Instalar o MySQL Server
-    become: true
-    apt: 
-      name: mysql-server
-      state: latest
-      update_cache: true  
-  - name: Iniciar o MySQL Server
-    service:
-      name: mysql
-      state: started
+    # Instalar dependências necessárias (Docker e Git)
+    - name: Atualizar o cache de pacotes APT
+      apt:
+        update_cache: true
 
+    - name: Iniciar o serviço Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    # Clonar o repositório
+    - name: Clonar repositório do GitHub
+      git:
+        repo: 'https://github.com/Chiet4/todoList_Atividade_Final.git'
+        dest: '/home/ubuntu/Atividade-final'
+
+    - name: Construir imagem Docker
+      community.docker.docker_image:
+        name: todolist:latest
+        build:
+          path: /home/ubuntu/Atividade-final  # Caminho completo para o diretório com o Dockerfile
+          dockerfile: Dockerfile
+
+    
+    # Executar o contêiner Docker
+    - name: Rodar o contêiner Docker
+      community.docker.docker_container:
+        name: todolist
+        image: todolist:latest
+        ports:
+          - "8080:80"
