@@ -14,8 +14,8 @@ resource "aws_db_instance" "RDS" {
   vpc_security_group_ids = [aws_security_group.todoList_gp.id]
   db_subnet_group_name   = aws_db_subnet_group.todolist_db_subnet_group.name
 
-  identifier            = "todolist-db-instance" 
-  
+  identifier = "todolist-db-instance"
+
 }
 
 
