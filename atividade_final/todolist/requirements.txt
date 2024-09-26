@@ -1,4 +1,0 @@
-wheel
-gunicorn
-Flask
-Flask-SQLAlchemy
